@@ -1,0 +1,216 @@
+---
+title: "pwlmm"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{pwlmm}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(pwlmm)
+```
+
+
+
+# Probability Weighted Iterative Generalised Least Squares for Two-level Multilevel Model and Two-level Multivariate Multilevel Model
+
+
+## 1. Introduction
+
+Hierarchical models, also known as multilevel models, have been widely applied in analyses where elementary units of a finite population are affected by the social groups or contexts to which they belong to. Examples are: students in schools, patients in hospitals, employees in companies and citizens in municipalities. Such hierarchies, however, need not to be restricted to two levels and can be expanded according to the nature of the population.
+
+Longitudinal data, or repeated measurements data, can be analysed under this approach, as measurements at different time points  (occasions)  occur within the same individual. Thus, considering the simplest case, a two-level model could be fitted with individuals at the highest level and the series of repeated  measurements at the lowest level (Hox et al., 2017).  In addition, it may also be of interest to investigate how correlated are the individual measurements at the different points in time. A tool used to deal with this particularity is the multivariate hierarchical model.
+
+Some researchers aim at analysing the results within the scope of those individuals selected for a specific study, while others focus on inferring for the finite population from which the sample was selected. While in the first case the point estimates are made directly from the results of models, for example, in the second case, sampling weights, calculated according to a sampling scheme, should be applied. Sampling schemes may include  stratification or clustering of elementary units, giving rise to a complex sample design.
+
+Although the sampling weights are essential for point estimation in survey data, this is often ignored under the hierarchical approach. One of the arguments is that the hierarchical models can incorporate certain characteristics of the sampling scheme as covariates, therefore assuming an ignorable sample design  (Rubin, 1976). On the other hand, when the units at any level of the hierarchy are selected with unequal probabilities, this argument may be inappropriate in the sense that the parameter estimates can be asymptotically biased  (Pfeffermann et al., 1998) .
+
+
+ Pfeffermann et al. (1998) presented a method for incorporating the sampling weights when fitting two-level random coefficients models.  Veiga et al. (2014) presented an extension of these methods, for the multivariate multilevel model in a longitudinal data analysis that incorporates the sampling weights, adapting to the rotating panels of Brazilian labour force survey (BR-LFS). 
+
+
+Thus, the objective of this package is to adapt the methodology presented in Pfeffermann et al. (1998) and in Veiga et al. (2014) under the $R$ environment through  improved performance, given the high computational demand arising from the estimation process.
+
+
+## 2. Estimation method for multilevel complex survey data
+
+ Pfeffermann et al. (1998) presented the probability weighted iterative generalized least square (PWIGLS) estimation method base on the  already established iterative generalized least square (IGLS) algorithm Goldstein, 2011) for the two-level random coefficients model. In a nutshell, the proposed approach consists of replacing each of the sums of levels 1 and 2 of the original algorithm with weighted sums, where each level weight corresponds to the the inverse of the selection probability at that stage. 
+
+Using the framework developed by  Pfeffermann et al. (1998), Veiga et al. (2014) extended this method incorporating not only  the extra level arising from the longitudinal structure, but also the complex covariance error structure, therefore accommodating the estimation of a multivariate multilevel model. Different error covariance linear structures were accommodated. 
+
+The next subsections present some information on the estimation procedure implemented within the package.  Please, refer to  Pfeffermann et al. (1998), Veiga et al. (2014) for the full description of the theory.
+
+### 2.1 PWIGLS estimation for two-level random coefficients models
+
+Let $y_{ij}$, $\boldsymbol{x}_{ij}$ and $\boldsymbol{z}_{ij}$ be the observed values for the $i$th level 1 unit within the $j$th level 2 unit\footnote{ $\boldsymbol{x}_{ij}=(1,...,x_{pij})$, $\boldsymbol{z}_{ij}=(1,...,z_{qij})$}. Therefore, defining $\boldsymbol{y}_j=(y_{1j},...,y_{n_jj})^T$ as a $n_j\times1$ vector, $\boldsymbol{X}_j=(\boldsymbol{x}_{1j},...,\boldsymbol{x}_{n_jj})^T$ as a $n_j\times p$ matrix and $\boldsymbol{Z}_j=(\boldsymbol{z}_{1j},...,\boldsymbol{z}_{n_jj})^T$ as a $n_j\times q$ matrix. The model is represented by
+$$
+\boldsymbol{y}_{j}=X_{j} \boldsymbol{\beta}+\boldsymbol{r}_{j} \quad \quad \boldsymbol{r}_{j}\sim N(0,\boldsymbol{V}_j)
+$$
+where the composite error is $\boldsymbol{r}_{j}=Z_{j} \boldsymbol{u}_{j}+\boldsymbol{e}_{j}$ and $\boldsymbol{V}_{j}=\boldsymbol{Z}_{j} \Sigma_{u} \boldsymbol{Z}_{j}^{T}+\boldsymbol{I}_{n_{j}} \sigma_{e}^{2}$, where $\boldsymbol{I}_{n j}$ is an identity matrix size $n_{j} \times n_{j}$. 
+
+For the estimation procedure, $\boldsymbol{V}_{j}$ is expressed as a linear function of $\boldsymbol{\theta}$, which is the row vector formed with the $s$ distinct elements of $\Sigma_u$ and $\sigma_e$, such that:
+$$\boldsymbol{V}_{j}=\sum_{k=1}^{s} \theta_{k} \boldsymbol{G}_{kj}= \sum_{k=1}^{s} \theta_{k} (  \boldsymbol{Z}_{j} \boldsymbol{H}_{k j} \boldsymbol{Z}_{j}^{T} + \boldsymbol{I}_{n_{j}} \delta_{k s} ).$$
+
+Note that, hereafter the notation for sample size, such as $m$ instead of $M$ and $n_j$ instead of $N_j$, are used. 
+
+
+### 2.2 Estimation of fixed effects
+
+Fixed effects estimation,  considering the general case with $q \geq 1$, where $q$ is the number of random effects at level two, is taken by $$\boldsymbol{\hat{\beta}}^{(r)} = \boldsymbol{\hat{P}}^{(r) {-1}} \boldsymbol{\hat{q}}^{(r)}.$$ Given that $$\boldsymbol{V}_{jr}^{-1}=\hat{\sigma}^{-2}_e \boldsymbol{D}_{j}^{-1}-\hat{\sigma}^{-2}_e \boldsymbol{D}_{j}^{-1} \boldsymbol{Z}_{j} \hat{\boldsymbol{A}}_j \boldsymbol{Z}_{j}^{T} \boldsymbol{D}_{j}^{-1}$$  is the inverse of $\boldsymbol{V}_j\left(\boldsymbol{\hat{\theta}}^{(r-1)}\right)$, where $r$ is for the iteration 1, 2, \ldots, and $$\hat{\boldsymbol{A}}_j=(\boldsymbol{Z}_j^T\boldsymbol{D}_j^{-1}\boldsymbol{Z}_j +\hat{\sigma}_e^2\hat{\boldsymbol{\Sigma}}_u^{-1})^{-1}$$  we can write
+\begin{align} \tag{1} \label{P est}
+\boldsymbol{\hat{P}}^{(r)} &=\sum_j w_j (X_j^{T}\boldsymbol{V}_{jr}^{-1}X_j) \\ &=\sum_{j=1}^{m}{w_j(\boldsymbol{\hat{T}}_{1j}-\boldsymbol{\hat{T}}_{2j} \hat{\boldsymbol{A}}_j \boldsymbol{\hat{T}}_{2j}^T)},
+ \end{align} and 
+ \begin{align} \tag{2} \label{q est}
+  \boldsymbol{\hat{q}}^{(r)}&=\sum_j w_j  (X_j^{T}\boldsymbol{V}_{jr}^{-1}\boldsymbol{y}_j) \\
+  & =\sum_{j=1}^{m}{w_j(\boldsymbol{\hat{t}}_{3j}-\boldsymbol{\hat{T}}_{2j} \hat{\boldsymbol{A}_j} \boldsymbol{\hat{t}}_{4j})},
+ \end{align} where $\boldsymbol{D}_j^{-1}=\text{diag}(w_{i|j})$ is a $n_j\times n_j$ diagonal matrix with $w_{i|j}$ in the main diagonal,
+ $\boldsymbol{\hat{T}}_{1j}=\boldsymbol{X}_j^T\boldsymbol{D}_j^{-1}\boldsymbol{X}_j$, $\boldsymbol{\hat{T}}_{2j}=\boldsymbol{X}_j^T\boldsymbol{D}_j^{-1}\boldsymbol{Z}_j$, $\boldsymbol{\hat{t}}_{3j}=\boldsymbol{X}_j^T\boldsymbol{D}_j^{-1}\boldsymbol{y}_j$, $\boldsymbol{\hat{t}}_{4j}=\boldsymbol{Z}_j^T\boldsymbol{D}_j^{-1}\boldsymbol{y}_j$, 
+ $\boldsymbol{\hat{T}_{5j}}=\boldsymbol{Z}_j^T\boldsymbol{D}_j^{-1}\boldsymbol{Z}_j$, and re-writing 
+ $\hat{\boldsymbol{A}}_j=(\boldsymbol{\hat{T}_{5j}}+\hat{\sigma}_e^2\hat{\boldsymbol{\Sigma}}_u^{-1})^{-1}$.
+ 
+### 2.3 Estimation of Random effects
+
+Taking the random part of the model to be represented by $\boldsymbol{\theta}$, the estimation of the random effects $\boldsymbol{\hat{\theta}}^{(r)}$ follows the matrix multiplication:
+$$\boldsymbol{\hat{\theta}}^{(r)}=\boldsymbol{\hat{R}}^{(r) {-1}} \boldsymbol{\hat{s}}^{(r)}.$$
+
+The representation for both $\boldsymbol{\hat{R}}^{(r)}$ and $\boldsymbol{\hat{s}}^{(r)}$ sums are defined by expressions for each entry in the matrix/vector. We can write
+\begin{align} \tag{3}
+\label{Rr est}
+\boldsymbol{\hat{R}}^{(r)} &= \sum_j w_j tr(\boldsymbol{V}_{jr}^{-1}\boldsymbol{G}_{kj} \boldsymbol{V}_{jr}^{-1}G_{lj}) \\
+& = \sum_{j=1}^{m} \boldsymbol{\hat{T}}_{rj}^{(r)},
+\end{align}
+and
+\begin{align} \tag{4}
+\label{Ss est}
+\boldsymbol{\hat{s}}^{(r)}& =\sum_j w_j tr(\boldsymbol{\hat{e}}_j^T\boldsymbol{V}_{jr}^{-1}\boldsymbol{G}_{kj}\boldsymbol{V}_{jr}^{-1}\boldsymbol{\hat{e}}_{j}) \\
+&= \sum_{j=1}^{m} \boldsymbol{\hat{t}}_{sj}^{(r)},
+\end{align}
+where 
+$\boldsymbol{\hat{T}}_{rj}^{(r)}$is a $s\times s$ matrix, where $s$ is the total number of parameters in $\boldsymbol{\theta}$,  and the $kl$th element is  expressed as
+\begin{equation} \label{R est}
+w_j\left\{\delta_{ks}\delta_{ls}\hat{N}_j + \delta_{ls}\mbox{tr}\left(\boldsymbol{Z}_j^T\boldsymbol{D}_j^{-1}\boldsymbol{Z}_j\hat{\boldsymbol{C}}_{kj}\right)+ \delta_{ks}\mbox{tr}\left(\boldsymbol{Z}_j^T\boldsymbol{D}_j^{-1}\boldsymbol{Z}_j\boldsymbol{H}_{l}\right)+
+\mbox{tr}\left(\boldsymbol{Z}_j^T\boldsymbol{D}_j^{-1}\boldsymbol{Z}_j\hat{\boldsymbol{C}}_{kj}\boldsymbol{Z}_j^T\boldsymbol{D}_j^{-1}\boldsymbol{Z}_j\boldsymbol{H}_{l}\right)\right\}
+\end{equation}
+and $\boldsymbol{\hat{t}}_{sj}^{(r)}$ is a vector of length $s$ and the $k$th element is
+\begin{equation} \label{S est}
+w_j\left[\delta_{ks}\mbox{tr}\left\{\hat{\boldsymbol{e}}_j ^T\boldsymbol{D}_j^{-1}\hat{\boldsymbol{e}}_j  \right\}+\mbox{tr}\left\{\hat{\boldsymbol{e}}_j ^T\boldsymbol{D}_j^{-1}\boldsymbol{Z}_j\hat{\boldsymbol{C}}_{kj}\boldsymbol{Z}_j^T\boldsymbol{D}_j^{-1}\hat{\boldsymbol{e}}_j  \right\} \right]
+\end{equation} where $\hat{\boldsymbol{e}}_j =\left(\boldsymbol{y}_j-\boldsymbol{X}_j\boldsymbol{\hat{\beta}}^{(r)}\right)$, $\delta_{ks}=1$ if $k=s$ (0, otherwise), 
+$\hat{N}_j=\sum_{i=1}^{n_j}w_{i|j}$, 
+$\hat{\boldsymbol{C}}_{kj}= -\delta_{ks}\hat{\boldsymbol{A}}_j+\hat{\boldsymbol{B}}_{kj}-\hat{\boldsymbol{B}}_{kj}\boldsymbol{\hat{T}_{5j}}\hat{\boldsymbol{A}}_j$, 
+$\hat{\boldsymbol{B}}_{kj}=\hat{\sigma}_e^2\hat{\boldsymbol{A}}_j\hat{\boldsymbol{\Sigma}}_u^{-1}\boldsymbol{H}_{k}-\delta_{ks}\hat{\boldsymbol{A}}_j$,
+$\boldsymbol{H}_{k}$ ($k = 1 ... s$) is a known $q\times q$ matrix, and the $ab$th element of this matrix is equal to 1 if the $ab$th entry in $\hat{\boldsymbol{\Sigma}}_u$ corresponds to $\hat{\theta}_k$(0, otherwise).
+
+### 2.4 Initial estimates
+Initial values for $\boldsymbol{\hat{\beta}}$ is given by
+\begin{equation} \label{beta}
+\boldsymbol{\hat{\beta}}^{(0)}=\left(\sum_{j=1}^{m} w_j\boldsymbol{\hat{T}}_{1j} \right)^{-1} \left(\sum_{j=1}^{m}w_j \boldsymbol{\hat{t}}_{3j}\right).
+\end{equation}
+
+In order to calculate the initial estimate for $\boldsymbol{\hat{\theta}}$, we have to split this parameter into level 2 and level 1 random effects, in order to get $\boldsymbol{\Sigma}_u$ and $\sigma_e^2$ respectively. That enables the initial estimate to be applied separately  to each part. With respect to $\boldsymbol{\Sigma}_u$, the diagonal entries  are  filled by $0.5$, which represents the level 2 variances, while the level 2 covariance(s) are represented by zero(s). The level 1 residual $\sigma_e^2$ initial value is given by 
+\begin{equation}
+\hat{\sigma}_e^{(0)2}=\frac{\sum_{j=1}^{m} w_j\hat{T}_{6j}^{(0)}}{\sum_{j=1}^{m} w_j(\hat{N}_j-1)}
+\end{equation} 
+where $\hat{T}_{6j}^{(0)}=\boldsymbol{w}_{i|j}^T(\hat{\boldsymbol{e}}_j^{(0)}-\boldsymbol{\hat{u}_j}^{(0)})^2$, $\hat{\boldsymbol{e}}_j^{(0)}=\boldsymbol{y}_j-\boldsymbol{X}_j\hat{\boldsymbol{\beta}}^{(0)}$ and $\boldsymbol{\hat{u}_j}^{(0)}$is a $n_j\times1$ vector of repeated $\hat{u}_j^{(0)}=\frac{\boldsymbol{w}_{i|j}^T\boldsymbol{e}_j^{(0)}}{\sum_{i=1}^{n_j}w_{i|j}}$.
+
+### 2.5 Variances
+The variance estimators of $\hat{\boldsymbol{\beta}}$ can be expressed as
+\begin{equation} \label{vbeta}
+\widehat{Var}(\boldsymbol{\hat{\beta}})=\boldsymbol{\hat{P}}^{-1}\left(\frac{m}{m-1}\right) \left(\sum_{j=1}^{m}w_j^2\boldsymbol{c}_j\boldsymbol{c}_j^T\right)\boldsymbol{\hat{P}}^{-1},
+\end{equation}
+where $\boldsymbol{\hat{P}}=lim_{r\to \infty}\boldsymbol{\hat{P}}^{(r)}$,  $\boldsymbol{c}_j=\boldsymbol{X}_j^T\boldsymbol{D}_j^{-1}\boldsymbol{e}_j - \boldsymbol{\hat{T}}_{2j} \hat{\boldsymbol{A}}_j \boldsymbol{Z}_j^T\boldsymbol{D}_j^{-1}\boldsymbol{e}_j$ and $\boldsymbol{e}_j=\boldsymbol{y}_j-\boldsymbol{X}_j \boldsymbol{\hat{\beta}}$. The variance estimator of $\hat{\boldsymbol{\theta}}$ can be expressed as 
+\begin{equation} \label{vtheta}
+\widehat{Var}(\boldsymbol{\hat{\theta}})=\boldsymbol{\hat{R}}^{-1}\left(\frac{m}{m-1}\right) \left(\sum_{j=1}^{m}w_j^2\boldsymbol{d}_j\boldsymbol{d}_j^T\right)\boldsymbol{\hat{R}}^{-1},
+\end{equation}
+where $\boldsymbol{\hat{R}}=lim_{r\to \infty}\boldsymbol{\hat{R}}^{(r)}$, $\boldsymbol{d}_j=\boldsymbol{\hat{t}}_{sj}-\boldsymbol{\hat{T}}_{rj} \boldsymbol{\hat{\theta}}$, $\boldsymbol{\hat{t}}_{sj}=lim_{r\to \infty}\boldsymbol{\hat{t}}_{sj}^{(r)}$and $\boldsymbol{\hat{T}}_{rj}=lim_{r\to \infty}\boldsymbol{\hat{T}}_{rj}^{(r)}$.
+
+### 2.6 Residuals
+The level 2 residuals are estimated according to equations and expressions from Appendix 2.2 in  Goldstein (2011) . The estimated residuals at level $h$ (here the level 2) for the $j$th group is given by
+\begin{equation} \label{level2res}
+\hat{\boldsymbol{u}}_j=\boldsymbol{R}_{hj}^T \boldsymbol{V}^{-1}_j \boldsymbol{e}_j,
+\end{equation}
+where $\boldsymbol{R}_{hj}=\boldsymbol{Z}_j\hat{\boldsymbol{\Sigma}}_u$ and $\boldsymbol{V}_j=\boldsymbol{R}_{hj}\boldsymbol{Z}^T_j+\hat{\sigma}_e^2\boldsymbol{I}_{n_j}$. The variance estimator of $\boldsymbol{\hat{u}_j}$ is 
+\begin{equation} \label{varlevel2res}
+\widehat{Var}(\boldsymbol{\hat{u}_j})=\mbox{diag}(\hat{\boldsymbol{\Sigma}}_u-\boldsymbol{R}_{hj}^T \boldsymbol{V}^{-1}_j \boldsymbol{R}_{hj}).
+\end{equation}
+
+### 2.7 Scaled weights
+
+In a two-stage sampling scheme, level 2 units are selected with sampling probability $\pi_j$; at the second stage, level 1 units are selected within the $j$th  level 2 unit with probability $\pi_{i|j}$.  The sampling weights used in the PWIGLS method  are defined as $$w_j=\pi_j^{-1}$$ and $$w_{i|j}=\pi_{i|j}^{-1}$$.
+
+In order to reduce sample bias, it is essential to scale the weights $w_{j}$ and $w_{i|j}$.  Pfeffermann et al. (1998) suggested their method called scale method 2, therefore transforming $w_{j}$ and $w_{i|j}$ respectively to 
+\begin{equation} \label{wj}
+w_{j}^*=\frac{w_j}{\tilde{w}}
+\end{equation}
+and
+\begin{equation} \label{wij}
+w_{i|j}^*=\frac{w_{i|j}}{\tilde{w}_j}
+\end{equation}
+where $\tilde{w}=\sum_{j=1}^m w_j/m$ and $\tilde{w}_j=\sum_{i=1}^{n_j} w_{i|j}/n_j$. Hence, $\hat{N}_j$ becomes $n_j$ in equation $3$, as explained by  Pfeffermann et al. (1998).
+
+The package applies this scaling method.
+
+
+## 3. PWIGLS Estimation for multivariate multilevel models
+Now, let the model be represented by
+$$
+\boldsymbol{Y}_{j}=X_{j} \boldsymbol{\beta}+\boldsymbol{r}_{j} \quad \quad \boldsymbol{r}_{j} \sim N\left(0, \boldsymbol{V}_{j}\right)
+$$
+where ${r}_{j}$ is defined as follows,
+\begin{equation}
+\label{eq:rescomp}
+r_{tij} = v_j + d_{tij} u_{ij}.   
+\end{equation}
+
+The estimation process for the multivariate multilevel model with weights is fully described in   Veiga et al. (2014). It is a similar process as the PWIGLS for the random coefficients model described above. The differences are in the definition of: \begin{equation} \label{deltamm} \boldsymbol{V}_j= \sum_{k=1}^s \theta_k \boldsymbol{G}_{kj} = \sum_{k=1}^s \theta_k ( \boldsymbol{1} \boldsymbol{H}_{kj} \boldsymbol{1}^T +  \boldsymbol{I}_{n_j}\otimes \Delta_{kj}),\end{equation} therefore, changes are observed in: 
+\begin{itemize}
+     \item the $\boldsymbol{H}$ matrices, which are $q\times q$ matrices of zeroes and ones with $k= 1, \ldots, s$, $j=1, \ldots, n$;
+    \item the $\Delta$ matrices are $s$ $T\times T$ matrices of zeroes and ones determining the covariance structure imposed in the multivariate model;
+    \item the $\boldsymbol{D}_{j}^{-1}$ which now takes the form $\boldsymbol{W}_{j} \otimes \hat{\boldsymbol{\Sigma}}_u^{-1}$ where $\boldsymbol{W}_{j}=\text{diag}(w_{1|j}, \ldots, w_{n_j|j})$ is the diagonal matrix with the $n_j$ individual longitudinal weights on the diagonal.
+ \end{itemize} 
+
+Furthermore, we can write $$\hat{\boldsymbol{A}}_j =\left\{ \hat{\Sigma}_v^{-1} +  \boldsymbol{Z}_j^{T} (\boldsymbol{W}_{j}\otimes \hat{\Sigma}_u^{-1}) \boldsymbol{Z}_j \right\}^{-1} \;$$ and  \[\hat{\boldsymbol{V}}_{jr}^{-1} = \boldsymbol{W}_{j}\otimes \hat{\Sigma}_u^{-1} - (\boldsymbol{W}_{j}\otimes \hat{\Sigma}_u^{-1})\boldsymbol{Z}_j \hat{\boldsymbol{A}}_j \boldsymbol{Z}_j^{T}(\boldsymbol{W}_{j}\otimes \hat{\Sigma}_u^{-1}).\] The fixed effects are then, as previously, estimated by solving the equations $1$ and $2$ and the random part of the model is estimated by solving the equations $3$ and $4$. 
+
+
+
+
+## 4. Functions
+
+The format adopted for the estimation of two-level hierarchical linear models with weights was based in the same format used by  Bates et al. (2015)  package, `lme4`. The format for the multivariate hierarchical linear models with weights was based on the basic functions of $R$ for the estimation of linear models (`lm`, `glm`). The main difference in format between the two is that in the first, the use of random coefficients at the cluster level is allowed.
+
+For estimating two-level linear models with weights, the command required is 
+```
+pwigls2 (formula, data = NULL, wj, wi_j)
+```
+where `pwigls2` is the name of the function; `formula` is the formula where the response and explanatory variables are placed in such as  `Y = X_1+ X_2 + ... + X_p + (1 | group)`, so that the variables with random effects are between the parentheses to the left of the vertical bar and the group identifier variable to the right; `data` is a `data frame` (optional) containing the variables used in `formula`; `wj` is the vector of weights corresponding to level 2 units, and `wi_j` is the vector of weights corresponding to level 1 units, conditional to their respective level 2 unit.
+
+For estimating multivariate multilevel linear models with weights, the command required is 
+```
+wmlmm(formula, data = NULL, ID3, ID2, ID1, wj, wi_j, type, rot = NULL) 
+```
+where `wmlmm` is the name of the function; `formula` is the formula where the response and explanatory variables are placed such as  `Y = X_1 + X_2 + ... + X_p`. There is no need to reference the $k$ points as explanatory variables; `ID3`, `ID2` and `ID1` are the identifiers for level 2 units, level 1 units, and time-dummies for level 1 units, respectively; `type` is the type of error covariance structure that the user wants to estimate, that can be:  `toep`, for Toeplitz; `uns` for unstructured;  and `genlin` for the general linear with dependency on `lag`; `rot` is a vector of 0's and 1's that identifies the occasions to automatically create the matrices $A_1, \dots, A_k$ of 
+\begin{equation} \label{genlin}
+    \Sigma^{genlin}_r = \theta_1 A_1 + \theta_2 A_2 + \cdots + \theta_t A_k,
+\end{equation}
+for  `type = genlin` (see example below); and `data` and `wj` have the same functionality here as in the function `pwigls2`, while `wi_j`, for a longitudinal data, corresponds to the longitudinal weights. 
+
+## 5. References
+
+Bates, D., M ̈achler, M., Bolker, B., and Walker, S. (2015). Fitting linear mixed-effects models using lme4. Journal of Statistical Software, 67(1):1–48
+
+Goldstein, H. (2011). Multilevel statistical models, volume 922. John Wiley & Sons.
+
+Hox, J. J., Moerbeek, M., and Van de Schoot, R. (2017). Multilevel analysis: Techniques and applications. Routledge.
+
+Pfeffermann, D., Skinner, C. J., Holmes, D. J., Goldstein, H., and Rasbash, J. (1998). Weighting for unequal selection probabilities in multilevel models. Journal of the Royal Statistical Society: series B (statistical methodology), 60(1):23–40.
+
+Veiga, A., Smith, P. W., and Brown, J. J. (2014). The use of sample weights in multivariate multilevel models with an application to income data collected by using a rotating panel
+survey. Journal of the Royal Statistical Society: Series C (Applied Statistics), 63(1):65–84

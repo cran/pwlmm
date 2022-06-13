@@ -52,8 +52,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // iterative_multi_beta
-Rcpp::List iterative_multi_beta(int nvar, int ncluster, const Eigen::MatrixXd& panelsetup2, const Eigen::MatrixXd& x, const Eigen::VectorXd& y, const Eigen::VectorXd& z, const Eigen::VectorXd& wi_j_star, const Eigen::VectorXd& wj_star, const Eigen::MatrixXd& teta, int tt, const Eigen::MatrixXd& teta_genlin);
-RcppExport SEXP _pwlmm_iterative_multi_beta(SEXP nvarSEXP, SEXP nclusterSEXP, SEXP panelsetup2SEXP, SEXP xSEXP, SEXP ySEXP, SEXP zSEXP, SEXP wi_j_starSEXP, SEXP wj_starSEXP, SEXP tetaSEXP, SEXP ttSEXP, SEXP teta_genlinSEXP) {
+Rcpp::List iterative_multi_beta(int nvar, int ncluster, const Eigen::MatrixXd& panelsetup2, const Eigen::MatrixXd& x, const Eigen::VectorXd& y, const Eigen::VectorXd& z, const Eigen::VectorXd& wi_j_star, const Eigen::VectorXd& wj_star, const Eigen::MatrixXd& theta, int tt, const Eigen::MatrixXd& theta_genlin);
+RcppExport SEXP _pwlmm_iterative_multi_beta(SEXP nvarSEXP, SEXP nclusterSEXP, SEXP panelsetup2SEXP, SEXP xSEXP, SEXP ySEXP, SEXP zSEXP, SEXP wi_j_starSEXP, SEXP wj_starSEXP, SEXP thetaSEXP, SEXP ttSEXP, SEXP theta_genlinSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -65,16 +65,16 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const Eigen::VectorXd& >::type z(zSEXP);
     Rcpp::traits::input_parameter< const Eigen::VectorXd& >::type wi_j_star(wi_j_starSEXP);
     Rcpp::traits::input_parameter< const Eigen::VectorXd& >::type wj_star(wj_starSEXP);
-    Rcpp::traits::input_parameter< const Eigen::MatrixXd& >::type teta(tetaSEXP);
+    Rcpp::traits::input_parameter< const Eigen::MatrixXd& >::type theta(thetaSEXP);
     Rcpp::traits::input_parameter< int >::type tt(ttSEXP);
-    Rcpp::traits::input_parameter< const Eigen::MatrixXd& >::type teta_genlin(teta_genlinSEXP);
-    rcpp_result_gen = Rcpp::wrap(iterative_multi_beta(nvar, ncluster, panelsetup2, x, y, z, wi_j_star, wj_star, teta, tt, teta_genlin));
+    Rcpp::traits::input_parameter< const Eigen::MatrixXd& >::type theta_genlin(theta_genlinSEXP);
+    rcpp_result_gen = Rcpp::wrap(iterative_multi_beta(nvar, ncluster, panelsetup2, x, y, z, wi_j_star, wj_star, theta, tt, theta_genlin));
     return rcpp_result_gen;
 END_RCPP
 }
-// iterative_multi_teta
-Rcpp::List iterative_multi_teta(int ncluster, const Eigen::VectorXd& beta, const Eigen::MatrixXd& panelsetup2, const Eigen::MatrixXd& x, const Eigen::VectorXd& y, const Eigen::VectorXd& wi_j_star, const Eigen::VectorXd& inv_wi_j_star, const Eigen::VectorXd& wj_star, int tt, const std::vector<Eigen::MatrixXd>& DELTA, const std::vector<Eigen::MatrixXd>& invvjs, const Eigen::VectorXd& h_matrix, int s, int ss, int nvar);
-RcppExport SEXP _pwlmm_iterative_multi_teta(SEXP nclusterSEXP, SEXP betaSEXP, SEXP panelsetup2SEXP, SEXP xSEXP, SEXP ySEXP, SEXP wi_j_starSEXP, SEXP inv_wi_j_starSEXP, SEXP wj_starSEXP, SEXP ttSEXP, SEXP DELTASEXP, SEXP invvjsSEXP, SEXP h_matrixSEXP, SEXP sSEXP, SEXP ssSEXP, SEXP nvarSEXP) {
+// iterative_multi_theta
+Rcpp::List iterative_multi_theta(int ncluster, const Eigen::VectorXd& beta, const Eigen::MatrixXd& panelsetup2, const Eigen::MatrixXd& x, const Eigen::VectorXd& y, const Eigen::VectorXd& wi_j_star, const Eigen::VectorXd& inv_wi_j_star, const Eigen::VectorXd& wj_star, int tt, const std::vector<Eigen::MatrixXd>& DELTA, const std::vector<Eigen::MatrixXd>& invvjs, const Eigen::VectorXd& h_matrix, int s, int ss, int nvar);
+RcppExport SEXP _pwlmm_iterative_multi_theta(SEXP nclusterSEXP, SEXP betaSEXP, SEXP panelsetup2SEXP, SEXP xSEXP, SEXP ySEXP, SEXP wi_j_starSEXP, SEXP inv_wi_j_starSEXP, SEXP wj_starSEXP, SEXP ttSEXP, SEXP DELTASEXP, SEXP invvjsSEXP, SEXP h_matrixSEXP, SEXP sSEXP, SEXP ssSEXP, SEXP nvarSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -93,20 +93,20 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< int >::type s(sSEXP);
     Rcpp::traits::input_parameter< int >::type ss(ssSEXP);
     Rcpp::traits::input_parameter< int >::type nvar(nvarSEXP);
-    rcpp_result_gen = Rcpp::wrap(iterative_multi_teta(ncluster, beta, panelsetup2, x, y, wi_j_star, inv_wi_j_star, wj_star, tt, DELTA, invvjs, h_matrix, s, ss, nvar));
+    rcpp_result_gen = Rcpp::wrap(iterative_multi_theta(ncluster, beta, panelsetup2, x, y, wi_j_star, inv_wi_j_star, wj_star, tt, DELTA, invvjs, h_matrix, s, ss, nvar));
     return rcpp_result_gen;
 END_RCPP
 }
 // multi_variances_residuals
-Rcpp::List multi_variances_residuals(int nvar, int s, const Eigen::VectorXd beta, const Eigen::VectorXd teta, const Eigen::VectorXd& y, const Eigen::MatrixXd& x, const Eigen::VectorXd& z, const Eigen::VectorXd& wi_j_star, int ncluster, const Eigen::MatrixXd& panelsetup2, const Eigen::MatrixXd& R, const Eigen::MatrixXd& S, const Eigen::VectorXd& wj_star, int tt, const Eigen::MatrixXd& teta_1, const Eigen::MatrixXd& teta_matrix, int nsubjc_t, double teta1);
-RcppExport SEXP _pwlmm_multi_variances_residuals(SEXP nvarSEXP, SEXP sSEXP, SEXP betaSEXP, SEXP tetaSEXP, SEXP ySEXP, SEXP xSEXP, SEXP zSEXP, SEXP wi_j_starSEXP, SEXP nclusterSEXP, SEXP panelsetup2SEXP, SEXP RSEXP, SEXP SSEXP, SEXP wj_starSEXP, SEXP ttSEXP, SEXP teta_1SEXP, SEXP teta_matrixSEXP, SEXP nsubjc_tSEXP, SEXP teta1SEXP) {
+Rcpp::List multi_variances_residuals(int nvar, int s, const Eigen::VectorXd beta, const Eigen::VectorXd theta, const Eigen::VectorXd& y, const Eigen::MatrixXd& x, const Eigen::VectorXd& z, const Eigen::VectorXd& wi_j_star, int ncluster, const Eigen::MatrixXd& panelsetup2, const Eigen::MatrixXd& R, const Eigen::MatrixXd& S, const Eigen::VectorXd& wj_star, int tt, const Eigen::MatrixXd& theta_1, const Eigen::MatrixXd& theta_matrix, int nsubjc_t, double theta1);
+RcppExport SEXP _pwlmm_multi_variances_residuals(SEXP nvarSEXP, SEXP sSEXP, SEXP betaSEXP, SEXP thetaSEXP, SEXP ySEXP, SEXP xSEXP, SEXP zSEXP, SEXP wi_j_starSEXP, SEXP nclusterSEXP, SEXP panelsetup2SEXP, SEXP RSEXP, SEXP SSEXP, SEXP wj_starSEXP, SEXP ttSEXP, SEXP theta_1SEXP, SEXP theta_matrixSEXP, SEXP nsubjc_tSEXP, SEXP theta1SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< int >::type nvar(nvarSEXP);
     Rcpp::traits::input_parameter< int >::type s(sSEXP);
     Rcpp::traits::input_parameter< const Eigen::VectorXd >::type beta(betaSEXP);
-    Rcpp::traits::input_parameter< const Eigen::VectorXd >::type teta(tetaSEXP);
+    Rcpp::traits::input_parameter< const Eigen::VectorXd >::type theta(thetaSEXP);
     Rcpp::traits::input_parameter< const Eigen::VectorXd& >::type y(ySEXP);
     Rcpp::traits::input_parameter< const Eigen::MatrixXd& >::type x(xSEXP);
     Rcpp::traits::input_parameter< const Eigen::VectorXd& >::type z(zSEXP);
@@ -117,11 +117,11 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const Eigen::MatrixXd& >::type S(SSEXP);
     Rcpp::traits::input_parameter< const Eigen::VectorXd& >::type wj_star(wj_starSEXP);
     Rcpp::traits::input_parameter< int >::type tt(ttSEXP);
-    Rcpp::traits::input_parameter< const Eigen::MatrixXd& >::type teta_1(teta_1SEXP);
-    Rcpp::traits::input_parameter< const Eigen::MatrixXd& >::type teta_matrix(teta_matrixSEXP);
+    Rcpp::traits::input_parameter< const Eigen::MatrixXd& >::type theta_1(theta_1SEXP);
+    Rcpp::traits::input_parameter< const Eigen::MatrixXd& >::type theta_matrix(theta_matrixSEXP);
     Rcpp::traits::input_parameter< int >::type nsubjc_t(nsubjc_tSEXP);
-    Rcpp::traits::input_parameter< double >::type teta1(teta1SEXP);
-    rcpp_result_gen = Rcpp::wrap(multi_variances_residuals(nvar, s, beta, teta, y, x, z, wi_j_star, ncluster, panelsetup2, R, S, wj_star, tt, teta_1, teta_matrix, nsubjc_t, teta1));
+    Rcpp::traits::input_parameter< double >::type theta1(theta1SEXP);
+    rcpp_result_gen = Rcpp::wrap(multi_variances_residuals(nvar, s, beta, theta, y, x, z, wi_j_star, ncluster, panelsetup2, R, S, wj_star, tt, theta_1, theta_matrix, nsubjc_t, theta1));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -166,8 +166,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // iterative_uni_theta
-Rcpp::List iterative_uni_theta(int s, int nvar, int ncluster, const Eigen::MatrixXd& sit, const Eigen::MatrixXd& tsit, const Eigen::MatrixXd& panelsetup, const Eigen::VectorXd& y, const Eigen::MatrixXd& x, const Eigen::MatrixXd& z, int q, const Eigen::VectorXd& beta, const Eigen::VectorXd& wj_star, double teta_s, const std::vector<Eigen::MatrixXd>& AJS, const std::vector<Eigen::MatrixXd>& T5, const Eigen::VectorXd& wi_j_star, const std::vector<Eigen::MatrixXd>& H_K, const std::vector<double>& TR_T5_HK, const std::vector<Eigen::MatrixXd>& T5_HK);
-RcppExport SEXP _pwlmm_iterative_uni_theta(SEXP sSEXP, SEXP nvarSEXP, SEXP nclusterSEXP, SEXP sitSEXP, SEXP tsitSEXP, SEXP panelsetupSEXP, SEXP ySEXP, SEXP xSEXP, SEXP zSEXP, SEXP qSEXP, SEXP betaSEXP, SEXP wj_starSEXP, SEXP teta_sSEXP, SEXP AJSSEXP, SEXP T5SEXP, SEXP wi_j_starSEXP, SEXP H_KSEXP, SEXP TR_T5_HKSEXP, SEXP T5_HKSEXP) {
+Rcpp::List iterative_uni_theta(int s, int nvar, int ncluster, const Eigen::MatrixXd& sit, const Eigen::MatrixXd& tsit, const Eigen::MatrixXd& panelsetup, const Eigen::VectorXd& y, const Eigen::MatrixXd& x, const Eigen::MatrixXd& z, int q, const Eigen::VectorXd& beta, const Eigen::VectorXd& wj_star, double theta_s, const std::vector<Eigen::MatrixXd>& AJS, const std::vector<Eigen::MatrixXd>& T5, const Eigen::VectorXd& wi_j_star, const std::vector<Eigen::MatrixXd>& H_K, const std::vector<double>& TR_T5_HK, const std::vector<Eigen::MatrixXd>& T5_HK);
+RcppExport SEXP _pwlmm_iterative_uni_theta(SEXP sSEXP, SEXP nvarSEXP, SEXP nclusterSEXP, SEXP sitSEXP, SEXP tsitSEXP, SEXP panelsetupSEXP, SEXP ySEXP, SEXP xSEXP, SEXP zSEXP, SEXP qSEXP, SEXP betaSEXP, SEXP wj_starSEXP, SEXP theta_sSEXP, SEXP AJSSEXP, SEXP T5SEXP, SEXP wi_j_starSEXP, SEXP H_KSEXP, SEXP TR_T5_HKSEXP, SEXP T5_HKSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -183,14 +183,14 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< int >::type q(qSEXP);
     Rcpp::traits::input_parameter< const Eigen::VectorXd& >::type beta(betaSEXP);
     Rcpp::traits::input_parameter< const Eigen::VectorXd& >::type wj_star(wj_starSEXP);
-    Rcpp::traits::input_parameter< double >::type teta_s(teta_sSEXP);
+    Rcpp::traits::input_parameter< double >::type theta_s(theta_sSEXP);
     Rcpp::traits::input_parameter< const std::vector<Eigen::MatrixXd>& >::type AJS(AJSSEXP);
     Rcpp::traits::input_parameter< const std::vector<Eigen::MatrixXd>& >::type T5(T5SEXP);
     Rcpp::traits::input_parameter< const Eigen::VectorXd& >::type wi_j_star(wi_j_starSEXP);
     Rcpp::traits::input_parameter< const std::vector<Eigen::MatrixXd>& >::type H_K(H_KSEXP);
     Rcpp::traits::input_parameter< const std::vector<double>& >::type TR_T5_HK(TR_T5_HKSEXP);
     Rcpp::traits::input_parameter< const std::vector<Eigen::MatrixXd>& >::type T5_HK(T5_HKSEXP);
-    rcpp_result_gen = Rcpp::wrap(iterative_uni_theta(s, nvar, ncluster, sit, tsit, panelsetup, y, x, z, q, beta, wj_star, teta_s, AJS, T5, wi_j_star, H_K, TR_T5_HK, T5_HK));
+    rcpp_result_gen = Rcpp::wrap(iterative_uni_theta(s, nvar, ncluster, sit, tsit, panelsetup, y, x, z, q, beta, wj_star, theta_s, AJS, T5, wi_j_star, H_K, TR_T5_HK, T5_HK));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -228,15 +228,15 @@ BEGIN_RCPP
 END_RCPP
 }
 // uni_variances_residuals
-Rcpp::List uni_variances_residuals(int nvar, int s, const Eigen::VectorXd beta, const Eigen::VectorXd teta, const Eigen::VectorXd& y, const Eigen::MatrixXd& x, int ncluster, const Eigen::MatrixXd& panelsetup, const std::vector<Eigen::MatrixXd>& T2, const std::vector<Eigen::MatrixXd>& T5, const Eigen::VectorXd& wj_star, const Eigen::MatrixXd& sit, int nsubjc_t, int q, const Eigen::MatrixXd& z, const Eigen::MatrixXd& Sigmau, double teta_s, const Eigen::VectorXd& wi_j_star, const std::vector<Eigen::MatrixXd>& H_K, const std::vector<double>& TR_T5_HK, const std::vector<Eigen::MatrixXd>& T5_HK);
-RcppExport SEXP _pwlmm_uni_variances_residuals(SEXP nvarSEXP, SEXP sSEXP, SEXP betaSEXP, SEXP tetaSEXP, SEXP ySEXP, SEXP xSEXP, SEXP nclusterSEXP, SEXP panelsetupSEXP, SEXP T2SEXP, SEXP T5SEXP, SEXP wj_starSEXP, SEXP sitSEXP, SEXP nsubjc_tSEXP, SEXP qSEXP, SEXP zSEXP, SEXP SigmauSEXP, SEXP teta_sSEXP, SEXP wi_j_starSEXP, SEXP H_KSEXP, SEXP TR_T5_HKSEXP, SEXP T5_HKSEXP) {
+Rcpp::List uni_variances_residuals(int nvar, int s, const Eigen::VectorXd beta, const Eigen::VectorXd theta, const Eigen::VectorXd& y, const Eigen::MatrixXd& x, int ncluster, const Eigen::MatrixXd& panelsetup, const std::vector<Eigen::MatrixXd>& T2, const std::vector<Eigen::MatrixXd>& T5, const Eigen::VectorXd& wj_star, const Eigen::MatrixXd& sit, int nsubjc_t, int q, const Eigen::MatrixXd& z, const Eigen::MatrixXd& Sigmau, double theta_s, const Eigen::VectorXd& wi_j_star, const std::vector<Eigen::MatrixXd>& H_K, const std::vector<double>& TR_T5_HK, const std::vector<Eigen::MatrixXd>& T5_HK);
+RcppExport SEXP _pwlmm_uni_variances_residuals(SEXP nvarSEXP, SEXP sSEXP, SEXP betaSEXP, SEXP thetaSEXP, SEXP ySEXP, SEXP xSEXP, SEXP nclusterSEXP, SEXP panelsetupSEXP, SEXP T2SEXP, SEXP T5SEXP, SEXP wj_starSEXP, SEXP sitSEXP, SEXP nsubjc_tSEXP, SEXP qSEXP, SEXP zSEXP, SEXP SigmauSEXP, SEXP theta_sSEXP, SEXP wi_j_starSEXP, SEXP H_KSEXP, SEXP TR_T5_HKSEXP, SEXP T5_HKSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< int >::type nvar(nvarSEXP);
     Rcpp::traits::input_parameter< int >::type s(sSEXP);
     Rcpp::traits::input_parameter< const Eigen::VectorXd >::type beta(betaSEXP);
-    Rcpp::traits::input_parameter< const Eigen::VectorXd >::type teta(tetaSEXP);
+    Rcpp::traits::input_parameter< const Eigen::VectorXd >::type theta(thetaSEXP);
     Rcpp::traits::input_parameter< const Eigen::VectorXd& >::type y(ySEXP);
     Rcpp::traits::input_parameter< const Eigen::MatrixXd& >::type x(xSEXP);
     Rcpp::traits::input_parameter< int >::type ncluster(nclusterSEXP);
@@ -249,12 +249,12 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< int >::type q(qSEXP);
     Rcpp::traits::input_parameter< const Eigen::MatrixXd& >::type z(zSEXP);
     Rcpp::traits::input_parameter< const Eigen::MatrixXd& >::type Sigmau(SigmauSEXP);
-    Rcpp::traits::input_parameter< double >::type teta_s(teta_sSEXP);
+    Rcpp::traits::input_parameter< double >::type theta_s(theta_sSEXP);
     Rcpp::traits::input_parameter< const Eigen::VectorXd& >::type wi_j_star(wi_j_starSEXP);
     Rcpp::traits::input_parameter< const std::vector<Eigen::MatrixXd>& >::type H_K(H_KSEXP);
     Rcpp::traits::input_parameter< const std::vector<double>& >::type TR_T5_HK(TR_T5_HKSEXP);
     Rcpp::traits::input_parameter< const std::vector<Eigen::MatrixXd>& >::type T5_HK(T5_HKSEXP);
-    rcpp_result_gen = Rcpp::wrap(uni_variances_residuals(nvar, s, beta, teta, y, x, ncluster, panelsetup, T2, T5, wj_star, sit, nsubjc_t, q, z, Sigmau, teta_s, wi_j_star, H_K, TR_T5_HK, T5_HK));
+    rcpp_result_gen = Rcpp::wrap(uni_variances_residuals(nvar, s, beta, theta, y, x, ncluster, panelsetup, T2, T5, wj_star, sit, nsubjc_t, q, z, Sigmau, theta_s, wi_j_star, H_K, TR_T5_HK, T5_HK));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -264,7 +264,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_pwlmm_blkdiag", (DL_FUNC) &_pwlmm_blkdiag, 2},
     {"_pwlmm_initial_beta", (DL_FUNC) &_pwlmm_initial_beta, 7},
     {"_pwlmm_iterative_multi_beta", (DL_FUNC) &_pwlmm_iterative_multi_beta, 11},
-    {"_pwlmm_iterative_multi_teta", (DL_FUNC) &_pwlmm_iterative_multi_teta, 15},
+    {"_pwlmm_iterative_multi_theta", (DL_FUNC) &_pwlmm_iterative_multi_theta, 15},
     {"_pwlmm_multi_variances_residuals", (DL_FUNC) &_pwlmm_multi_variances_residuals, 18},
     {"_pwlmm_tjs_uni_beta", (DL_FUNC) &_pwlmm_tjs_uni_beta, 11},
     {"_pwlmm_iterative_uni_beta", (DL_FUNC) &_pwlmm_iterative_uni_beta, 9},

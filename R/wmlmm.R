@@ -77,17 +77,17 @@ wmlmm <- function(formula, data = NULL, ID3, ID2, ID1, wj, wij, type, rot = NULL
   if(type=="toep"){
     lista <- delta_toep(tt)
     DELTA <- lista$delta
-    teta_loop <- lista$teta_loop_toep
+    theta_loop <- lista$theta_loop_toep
     name_type <- lista$name_type
   } else if(type=="uns") {
     lista <- delta_uns(tt)
     DELTA <- lista$delta
-    teta_loop <- lista$teta_loop_uns
+    theta_loop <- lista$theta_loop_uns
     name_type <- lista$name_type
   } else {
     lista <- delta_gen(rot)
     DELTA <- lista$delta
-    teta_loop <- lista$teta_loop_genlin
+    theta_loop <- lista$theta_loop_genlin
     name_type <- lista$name_type
   }
 
@@ -133,8 +133,8 @@ wmlmm <- function(formula, data = NULL, ID3, ID2, ID1, wj, wij, type, rot = NULL
     Scaled_W$wj_star,
     p)
 
-  teta0 = rep(0.5, s)
-  teta0[2]=i_t$wj_t6/i_t$wj_aux
+  theta0 = rep(0.5, s)
+  theta0[2]=i_t$wj_t6/i_t$wj_aux
 
   #--------------------------------------------------------------------------
   #                     IGLS - ITERATIVE
@@ -147,18 +147,18 @@ wmlmm <- function(formula, data = NULL, ID3, ID2, ID1, wj, wij, type, rot = NULL
   ## Trick
   beta_ant = beta0
   beta = beta_ant*2
-  teta_ant=teta0
-  teta=teta_ant * 2
+  theta_ant=theta0
+  theta=theta_ant * 2
 
-  while (itera<= 200  & (any(abs((teta-teta_ant))> 0.000001) | any(abs((beta-beta_ant))> 0.000001) )){
+  while (itera<= 200  & (any(abs((theta-theta_ant))> 0.000001) | any(abs((beta-beta_ant))> 0.000001) )){
 
     if (itera != 1) {
-      teta <- teta
+      theta <- theta
     } else{
-      teta <- teta0
+      theta <- theta0
     }
 
-    teta_matrix <- eval(teta_loop)
+    theta_matrix <- eval(theta_loop)
 
     objeto = iterative_multi_beta(
       p,
@@ -169,9 +169,9 @@ wmlmm <- function(formula, data = NULL, ID3, ID2, ID1, wj, wij, type, rot = NULL
       z,
       Scaled_W$wi_j_star,
       Scaled_W$wj_star,
-      as.matrix(teta),
+      as.matrix(theta),
       tt,
-      teta_matrix)
+      theta_matrix)
 
     #----------- beta--------------
     solve_s_matp <- solve(objeto$s_matp)
@@ -183,7 +183,7 @@ wmlmm <- function(formula, data = NULL, ID3, ID2, ID1, wj, wij, type, rot = NULL
     beta <- solve_s_matp %*% objeto$s_matq
     beta <- as.numeric(beta)
 
-    objeto2=iterative_multi_teta(
+    objeto2=iterative_multi_theta(
       m,
       beta,
       panelsetup,
@@ -209,30 +209,30 @@ wmlmm <- function(formula, data = NULL, ID3, ID2, ID1, wj, wij, type, rot = NULL
     #-----theta = u0j , eij----#
 
     if (itera != 1) {
-      teta_ant = teta
+      theta_ant = theta
     }
 
     solve_r_mat <- solve(r_mat)
-    teta <- solve_r_mat %*% s_mat
-    teta <- as.numeric(teta)
+    theta <- solve_r_mat %*% s_mat
+    theta <- as.numeric(theta)
 
     #------End of iterative process----------
     itera = itera + 1
   }
 
-  teta_matrix <- eval(teta_loop)
+  theta_matrix <- eval(theta_loop)
 
   #-------------------------------------------------------------------------
   # Variances
   #-------------------------------------------------------------------------
-  teta1 <- teta[1]
-  teta_1 <- solve(teta1)
+  theta1 <- theta[1]
+  theta_1 <- solve(theta1)
 
   variances_resids <- multi_variances_residuals(
     p,
     s,
     beta,
-    teta,
+    theta,
     y,
     x,
     z,
@@ -243,29 +243,29 @@ wmlmm <- function(formula, data = NULL, ID3, ID2, ID1, wj, wij, type, rot = NULL
     objeto2$S,
     Scaled_W$wj_star,
     tt,
-    teta_1,
-    teta_matrix,
+    theta_1,
+    theta_matrix,
     n,
-    teta1)
+    theta1)
 
   dp_u <- sqrt(variances_resids$var_u)
 
   var_beta = solve_s_matp%*%((m/(m-1))*variances_resids$s_mat_c)%*%solve_s_matp
   dp_beta = sqrt(diag(var_beta))
 
-  #var_teta = 2*solve(r_mat) in other context
-  var_teta = solve_r_mat%*%(m/(m-1)*variances_resids$s_mat_d)%*%solve_r_mat
-  dp_teta = sqrt(diag(var_teta))
+  #var_theta = 2*solve(r_mat) in other context
+  var_theta = solve_r_mat%*%(m/(m-1)*variances_resids$s_mat_d)%*%solve_r_mat
+  dp_theta = sqrt(diag(var_theta))
 
-  Sigma_r=teta1*matrix(1,tt,tt)+ teta_matrix
+  Sigma_r=theta1*matrix(1,tt,tt)+ theta_matrix
 
   names(variances_resids$u) <- names(dp_u) <- as.vector(unique(clusters))
   #names(variances_resids$v) <- names(variances_resids$yhat) <- rownames(mm) necessary? 6x heavier
   names(beta) <- name1
-  names(teta) <- name3
+  names(theta) <- name3
   list_genlin <-list(beta = list(coefficients = beta, standard_errors = dp_beta, initial_values = beta0),
-                     theta = list(coefficients = teta, standard_errors = dp_teta, initial_values = teta0),
-                     mix_teta_matrix = teta_matrix, tot_var_matrix = Sigma_r, num_obs_1 = n_nivel_1, num_obs_2 = m,
+                     theta = list(coefficients = theta, standard_errors = dp_theta, initial_values = theta0),
+                     mix_theta_matrix = theta_matrix, tot_var_matrix = Sigma_r, num_obs_1 = n_nivel_1, num_obs_2 = m,
                      num_time_obs = tt, call = clprint, fitted_values = variances_resids$yhat,
                      individual_residuals = variances_resids$v,
                      group_residuals = list(coefficients = variances_resids$u, standard_errors = dp_u),

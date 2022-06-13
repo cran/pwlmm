@@ -13,16 +13,16 @@ initial_beta <- function(nvar, x, y, ncluster, panelsetup2, wi_j_star, wj_star) 
     .Call('_pwlmm_initial_beta', PACKAGE = 'pwlmm', nvar, x, y, ncluster, panelsetup2, wi_j_star, wj_star)
 }
 
-iterative_multi_beta <- function(nvar, ncluster, panelsetup2, x, y, z, wi_j_star, wj_star, teta, tt, teta_genlin) {
-    .Call('_pwlmm_iterative_multi_beta', PACKAGE = 'pwlmm', nvar, ncluster, panelsetup2, x, y, z, wi_j_star, wj_star, teta, tt, teta_genlin)
+iterative_multi_beta <- function(nvar, ncluster, panelsetup2, x, y, z, wi_j_star, wj_star, theta, tt, theta_genlin) {
+    .Call('_pwlmm_iterative_multi_beta', PACKAGE = 'pwlmm', nvar, ncluster, panelsetup2, x, y, z, wi_j_star, wj_star, theta, tt, theta_genlin)
 }
 
-iterative_multi_teta <- function(ncluster, beta, panelsetup2, x, y, wi_j_star, inv_wi_j_star, wj_star, tt, DELTA, invvjs, h_matrix, s, ss, nvar) {
-    .Call('_pwlmm_iterative_multi_teta', PACKAGE = 'pwlmm', ncluster, beta, panelsetup2, x, y, wi_j_star, inv_wi_j_star, wj_star, tt, DELTA, invvjs, h_matrix, s, ss, nvar)
+iterative_multi_theta <- function(ncluster, beta, panelsetup2, x, y, wi_j_star, inv_wi_j_star, wj_star, tt, DELTA, invvjs, h_matrix, s, ss, nvar) {
+    .Call('_pwlmm_iterative_multi_theta', PACKAGE = 'pwlmm', ncluster, beta, panelsetup2, x, y, wi_j_star, inv_wi_j_star, wj_star, tt, DELTA, invvjs, h_matrix, s, ss, nvar)
 }
 
-multi_variances_residuals <- function(nvar, s, beta, teta, y, x, z, wi_j_star, ncluster, panelsetup2, R, S, wj_star, tt, teta_1, teta_matrix, nsubjc_t, teta1) {
-    .Call('_pwlmm_multi_variances_residuals', PACKAGE = 'pwlmm', nvar, s, beta, teta, y, x, z, wi_j_star, ncluster, panelsetup2, R, S, wj_star, tt, teta_1, teta_matrix, nsubjc_t, teta1)
+multi_variances_residuals <- function(nvar, s, beta, theta, y, x, z, wi_j_star, ncluster, panelsetup2, R, S, wj_star, tt, theta_1, theta_matrix, nsubjc_t, theta1) {
+    .Call('_pwlmm_multi_variances_residuals', PACKAGE = 'pwlmm', nvar, s, beta, theta, y, x, z, wi_j_star, ncluster, panelsetup2, R, S, wj_star, tt, theta_1, theta_matrix, nsubjc_t, theta1)
 }
 
 tjs_uni_beta <- function(p, m, panelsetup, x, y, z, wi_j_star, q, s, H, wj_star) {
@@ -33,8 +33,8 @@ iterative_uni_beta <- function(nvar, ncluster, tsit, T1, T2, T3, T4, T5, wj_star
     .Call('_pwlmm_iterative_uni_beta', PACKAGE = 'pwlmm', nvar, ncluster, tsit, T1, T2, T3, T4, T5, wj_star)
 }
 
-iterative_uni_theta <- function(s, nvar, ncluster, sit, tsit, panelsetup, y, x, z, q, beta, wj_star, teta_s, AJS, T5, wi_j_star, H_K, TR_T5_HK, T5_HK) {
-    .Call('_pwlmm_iterative_uni_theta', PACKAGE = 'pwlmm', s, nvar, ncluster, sit, tsit, panelsetup, y, x, z, q, beta, wj_star, teta_s, AJS, T5, wi_j_star, H_K, TR_T5_HK, T5_HK)
+iterative_uni_theta <- function(s, nvar, ncluster, sit, tsit, panelsetup, y, x, z, q, beta, wj_star, theta_s, AJS, T5, wi_j_star, H_K, TR_T5_HK, T5_HK) {
+    .Call('_pwlmm_iterative_uni_theta', PACKAGE = 'pwlmm', s, nvar, ncluster, sit, tsit, panelsetup, y, x, z, q, beta, wj_star, theta_s, AJS, T5, wi_j_star, H_K, TR_T5_HK, T5_HK)
 }
 
 scaled_weight <- function(n, m, panelsetup, wi_j, wj) {
@@ -45,7 +45,7 @@ initial_theta <- function(beta0, x, y, ncluster, panelsetup, wi_j_star, wj_star,
     .Call('_pwlmm_initial_theta', PACKAGE = 'pwlmm', beta0, x, y, ncluster, panelsetup, wi_j_star, wj_star, nvar)
 }
 
-uni_variances_residuals <- function(nvar, s, beta, teta, y, x, ncluster, panelsetup, T2, T5, wj_star, sit, nsubjc_t, q, z, Sigmau, teta_s, wi_j_star, H_K, TR_T5_HK, T5_HK) {
-    .Call('_pwlmm_uni_variances_residuals', PACKAGE = 'pwlmm', nvar, s, beta, teta, y, x, ncluster, panelsetup, T2, T5, wj_star, sit, nsubjc_t, q, z, Sigmau, teta_s, wi_j_star, H_K, TR_T5_HK, T5_HK)
+uni_variances_residuals <- function(nvar, s, beta, theta, y, x, ncluster, panelsetup, T2, T5, wj_star, sit, nsubjc_t, q, z, Sigmau, theta_s, wi_j_star, H_K, TR_T5_HK, T5_HK) {
+    .Call('_pwlmm_uni_variances_residuals', PACKAGE = 'pwlmm', nvar, s, beta, theta, y, x, ncluster, panelsetup, T2, T5, wj_star, sit, nsubjc_t, q, z, Sigmau, theta_s, wi_j_star, H_K, TR_T5_HK, T5_HK)
 }
 

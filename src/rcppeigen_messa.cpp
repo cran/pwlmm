@@ -76,15 +76,15 @@ Rcpp::List iterative_multi_beta(
               const Eigen::VectorXd & z,
               const Eigen::VectorXd & wi_j_star,
               const Eigen::VectorXd & wj_star,
-              const Eigen::MatrixXd & teta,
+              const Eigen::MatrixXd & theta,
               int tt,
-              const Eigen::MatrixXd & teta_genlin){
+              const Eigen::MatrixXd & theta_genlin){
 
   Eigen::MatrixXd s_matp = Eigen::MatrixXd::Zero(nvar,nvar);
   Eigen::VectorXd s_matq = Eigen::VectorXd::Zero(nvar);
   std::vector<Eigen::MatrixXd> invvjs;
-  Eigen::MatrixXd sigma_inv = teta_genlin.inverse();
-  Eigen::MatrixXd s_sigma2e = teta.block(0,0,1,1).inverse();
+  Eigen::MatrixXd sigma_inv = theta_genlin.inverse();
+  Eigen::MatrixXd s_sigma2e = theta.block(0,0,1,1).inverse();
 
   for(int i = 0; i < ncluster; ++i){
     int b = panelsetup2(i,0);
@@ -120,7 +120,7 @@ Rcpp::List iterative_multi_beta(
 }
 
 // [[Rcpp::export]]
-Rcpp::List iterative_multi_teta(
+Rcpp::List iterative_multi_theta(
     int ncluster,
     const Eigen::VectorXd & beta,
     const Eigen::MatrixXd & panelsetup2,
@@ -185,7 +185,7 @@ Rcpp::List multi_variances_residuals(
     int nvar,
     int s,
     const Eigen::VectorXd beta,
-    const Eigen::VectorXd teta,
+    const Eigen::VectorXd theta,
     const Eigen::VectorXd & y,
     const Eigen::MatrixXd & x,
     const Eigen::VectorXd & z,
@@ -196,10 +196,10 @@ Rcpp::List multi_variances_residuals(
     const Eigen::MatrixXd & S,
     const Eigen::VectorXd & wj_star,
     int tt,
-    const Eigen::MatrixXd & teta_1,
-    const Eigen::MatrixXd & teta_matrix,
+    const Eigen::MatrixXd & theta_1,
+    const Eigen::MatrixXd & theta_matrix,
     int nsubjc_t,
-    double teta1){
+    double theta1){
 
   Eigen::MatrixXd s_mat_c = Eigen::MatrixXd::Zero(nvar,nvar);
   Eigen::MatrixXd s_mat_d = Eigen::MatrixXd::Zero(s,s);
@@ -226,10 +226,10 @@ Rcpp::List multi_variances_residuals(
     Eigen::VectorXd eij = yj - xj_beta;
 
     int np_div_tt = b/tt;
-    Eigen::MatrixXd sigma = blkdiag(teta_matrix, np_div_tt);
+    Eigen::MatrixXd sigma = blkdiag(theta_matrix, np_div_tt);
 
     Eigen::MatrixXd diag_sigma_inverse = diag_*sigma.inverse();
-    Eigen::MatrixXd aj = (teta_1 + zj.transpose()*diag_sigma_inverse*zj).inverse();
+    Eigen::MatrixXd aj = (theta_1 + zj.transpose()*diag_sigma_inverse*zj).inverse();
     Eigen::MatrixXd invvj = diag_sigma_inverse - diag_sigma_inverse*zj*aj*zj.transpose()*diag_sigma_inverse;
 
     Eigen::VectorXd cj = xj.transpose()*invvj*eij;
@@ -241,15 +241,15 @@ Rcpp::List multi_variances_residuals(
     Eigen::MatrixXd Rklj(Eigen::Map<Eigen::MatrixXd>(R_row.data(), s, s));
     Eigen::VectorXd Skj = S.row(i);
 
-    Eigen::VectorXd Rklj_teta = Rklj*teta;
-    Eigen::VectorXd SRt = Skj - Rklj_teta;
+    Eigen::VectorXd Rklj_theta = Rklj*theta;
+    Eigen::VectorXd SRt = Skj - Rklj_theta;
 
     Eigen::MatrixXd Dkj = SRt*SRt.transpose();
     s_mat_d += Dkj;
 
     //Residuals
 
-    Eigen::RowVectorXd Rhj = Eigen::VectorXd::Constant(b, teta1);
+    Eigen::RowVectorXd Rhj = Eigen::VectorXd::Constant(b, theta1);
 
     Eigen::MatrixXd Vj = zj*Rhj + sigma;
     Eigen::VectorXd aux = Rhj*Vj.inverse();
@@ -258,7 +258,7 @@ Rcpp::List multi_variances_residuals(
     u(i) = aux_eij;
 
     double aux_rhj = aux.dot(Rhj);
-    double diag_var_u = teta1 - aux_rhj;
+    double diag_var_u = theta1 - aux_rhj;
     var_u(i) = diag_var_u;
 
     Eigen::VectorXd zj_aux_eij = zj*aux_eij; //aux_eij é um double
@@ -404,7 +404,7 @@ Rcpp::List iterative_uni_theta(int s,
                                int q,
                                const Eigen::VectorXd & beta,
                                const Eigen::VectorXd & wj_star,
-                               double teta_s,
+                               double theta_s,
                                const std::vector<Eigen::MatrixXd> & AJS,
                                const std::vector<Eigen::MatrixXd> & T5,
                                const Eigen::VectorXd & wi_j_star,
@@ -435,7 +435,7 @@ Rcpp::List iterative_uni_theta(int s,
 
     Eigen::MatrixXd aj = AJS[j];
     Eigen::MatrixXd t5j = T5[j];
-    Eigen::MatrixXd teta_s_aj_sit = teta_s*aj*sit;
+    Eigen::MatrixXd theta_s_aj_sit = theta_s*aj*sit;
     Eigen::MatrixXd t5j_aj = t5j*aj;
 
     Eigen::VectorXd v = wi_j_star.segment(a,b);
@@ -450,7 +450,7 @@ Rcpp::List iterative_uni_theta(int s,
       int cont = j*s;
       int delta_k = delta[k];
 
-      Eigen::MatrixXd B_k = teta_s_aj_sit*H_K[k] - delta_k*aj;
+      Eigen::MatrixXd B_k = theta_s_aj_sit*H_K[k] - delta_k*aj;
       Eigen::MatrixXd C_k = -delta_k*aj + B_k - B_k*t5j_aj;
 
       Skj(k) = wj*(delta_k*tr_e_diag_e +(t_zj_diag_e*C_k*zj_diag_e).trace());
@@ -540,7 +540,7 @@ Rcpp::List uni_variances_residuals(
     int nvar,
     int s,
     const Eigen::VectorXd beta,
-    const Eigen::VectorXd teta,
+    const Eigen::VectorXd theta,
     const Eigen::VectorXd & y,
     const Eigen::MatrixXd & x,
     int ncluster,
@@ -553,7 +553,7 @@ Rcpp::List uni_variances_residuals(
     int q,
     const Eigen::MatrixXd & z,
     const Eigen::MatrixXd & Sigmau,
-    double teta_s,
+    double theta_s,
     const Eigen::VectorXd & wi_j_star,
     const std::vector<Eigen::MatrixXd> & H_K,
     const std::vector<double> & TR_T5_HK,
@@ -568,7 +568,7 @@ Rcpp::List uni_variances_residuals(
   Eigen::MatrixXd s_matc = Eigen::MatrixXd::Zero(nvar, nvar);
   Eigen::MatrixXd s_matd = Eigen::MatrixXd::Zero(s, s);
 
-  Eigen::MatrixXd tsit = teta_s*sit;
+  Eigen::MatrixXd tsit = theta_s*sit;
   std::vector<int> delta(s, 0);//-
   delta.back() = 1;//-
 
@@ -597,7 +597,7 @@ Rcpp::List uni_variances_residuals(
     Eigen::MatrixXd t5j = T5[j];//-
     Eigen::MatrixXd aj = (t5j + tsit).inverse();//-
 
-    Eigen::MatrixXd teta_s_aj_sit = aj*tsit;//-
+    Eigen::MatrixXd theta_s_aj_sit = aj*tsit;//-
     Eigen::MatrixXd t5j_aj = t5j*aj;//-
     Eigen::VectorXd cj = t7j - T2[j]*aj*t8j;
 
@@ -615,7 +615,7 @@ Rcpp::List uni_variances_residuals(
       int cont = j*s;
       int delta_k = delta[k];
 
-      Eigen::MatrixXd B_k = teta_s_aj_sit*H_K[k] - delta_k*aj;
+      Eigen::MatrixXd B_k = theta_s_aj_sit*H_K[k] - delta_k*aj;
       Eigen::MatrixXd C_k = -delta_k*aj + B_k - B_k*t5j_aj;
 
       Skj(k) = wj*(delta_k*tr_e_diag_e +(t_zj_diag_e*C_k*zj_diag_e).trace());
@@ -630,8 +630,8 @@ Rcpp::List uni_variances_residuals(
       }
     }
 
-    Eigen::VectorXd Rklj_teta = Rklj*teta;
-    Eigen::VectorXd SRt = Skj - Rklj_teta;
+    Eigen::VectorXd Rklj_theta = Rklj*theta;
+    Eigen::VectorXd SRt = Skj - Rklj_theta;
 
     Eigen::MatrixXd Dkj = wj_quad*(SRt*SRt.transpose());
     s_matd += Dkj;
@@ -641,7 +641,7 @@ Rcpp::List uni_variances_residuals(
 
     Eigen::MatrixXd Rhj = Sigmau*t_zj;
     Eigen::MatrixXd t_Rhj = Rhj.transpose();
-    Eigen::MatrixXd Vj = t_Rhj*t_zj + teta_s*(Eigen::MatrixXd::Identity(b, b));
+    Eigen::MatrixXd Vj = t_Rhj*t_zj + theta_s*(Eigen::MatrixXd::Identity(b, b));
     Eigen::MatrixXd aux =  Rhj*Vj.inverse();
 
     Eigen::VectorXd aux_eij = aux*eij;
@@ -659,7 +659,7 @@ Rcpp::List uni_variances_residuals(
     Eigen::VectorXd vj = eij - zj_aux_eij;
     v.segment(a,b) = vj;
 
-    //double auxil = teta_s*(1 - 1/b);
+    //double auxil = theta_s*(1 - 1/b);
     //Eigen::VectorXd var2 = Eigen::VectorXd::Constant(b,auxil);
     //var_v.segment(a,b) = var2;
   }

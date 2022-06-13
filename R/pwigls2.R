@@ -159,7 +159,7 @@ pwigls2 <-function(formula, data = NULL, wj, wij){
     p)
 
   sit <- diag(2, q)
-  teta0 <- c(sit[lower.tri(sit, diag = T)], i_t$wj_t6/i_t$wj_aux)
+  theta0 <- c(sit[lower.tri(sit, diag = T)], i_t$wj_t6/i_t$wj_aux)
 
   #--------------------------------------------------------------------------
   #                     IGLS - ITERATIVE
@@ -170,16 +170,16 @@ pwigls2 <-function(formula, data = NULL, wj, wij){
   ## Trick
   beta_ant = beta0
   beta = beta_ant*2
-  teta_ant=teta0
-  teta = teta_ant*2
+  theta_ant=theta0
+  theta = theta_ant*2
 
-  while (itera<= 200  & (any(abs((teta-teta_ant))> 0.000001) | any(abs((beta-beta_ant))> 0.000001))){
+  while (itera<= 200  & (any(abs((theta-theta_ant))> 0.000001) | any(abs((beta-beta_ant))> 0.000001))){
 
     if (itera == 0) {
-      teta <- teta0
+      theta <- theta0
     }
 
-    tsit <- teta[s]*sit
+    tsit <- theta[s]*sit
 
     objeto1 <- iterative_uni_beta(p,
                                   m,
@@ -213,7 +213,7 @@ pwigls2 <-function(formula, data = NULL, wj, wij){
                                    q,
                                    beta,
                                    Scaled_W$wj_star,
-                                   teta[s],
+                                   theta[s],
                                    objeto1$AJS,
                                    TJS$T5,
                                    Scaled_W$wi_j_star,
@@ -224,22 +224,22 @@ pwigls2 <-function(formula, data = NULL, wj, wij){
     #-----theta ----
 
     if (itera != 0) {
-      teta_ant = teta
+      theta_ant = theta
     }
 
     solve_r_mat <- solve(objeto2$r_mat)
-    teta = solve_r_mat %*% objeto2$s_mat
-    teta <- as.numeric(teta)
+    theta = solve_r_mat %*% objeto2$s_mat
+    theta <- as.numeric(theta)
 
-    ie_teta <- invvech_eigen(teta[one_to_sminus1]) #Variance covariance matrix sigma_u
-    sit <- solve(ie_teta)
+    ie_theta <- invvech_eigen(theta[one_to_sminus1]) #Variance covariance matrix sigma_u
+    sit <- solve(ie_theta)
 
     #------End of iterative process----------
     itera = itera + 1
   }
-  v=diag(ie_teta)
-  teta_var1 <- teta[s]
-  if(any(v<0) | teta_var1<0)
+  v=diag(ie_theta)
+  theta_var1 <- theta[s]
+  if(any(v<0) | theta_var1<0)
     stop('Model failed to converge: negative variance component(s)')
 
   #-------------------------------------------------------------------------
@@ -252,7 +252,7 @@ pwigls2 <-function(formula, data = NULL, wj, wij){
     p,
     s,
     beta,
-    teta,
+    theta,
     y,
     x,
     m,
@@ -264,8 +264,8 @@ pwigls2 <-function(formula, data = NULL, wj, wij){
     n,
     q,
     z,
-    ie_teta,
-    teta_var1,
+    ie_theta,
+    theta_var1,
     Scaled_W$wi_j_star,
     TJS$H_K,
     TJS$TR_T5_HK,
@@ -274,9 +274,9 @@ pwigls2 <-function(formula, data = NULL, wj, wij){
   var_beta = solve_s_matp%*%((m /(m-1))*variances_residuals$s_matc)%*%solve_s_matp
   dp_beta = sqrt(diag(var_beta))
 
-  #var_teta = 2*solve(r_mat) in other context
-  var_teta = solve_r_mat%*%(m/(m-1)*variances_residuals$s_matd)%*% solve_r_mat
-  dp_teta = sqrt(diag(var_teta))
+  #var_theta = 2*solve(r_mat) in other context
+  var_theta = solve_r_mat%*%(m/(m-1)*variances_residuals$s_matd)%*% solve_r_mat
+  dp_theta = sqrt(diag(var_theta))
 
   #-------------------------------------------------------------------------
   #  Residuals
@@ -290,30 +290,30 @@ pwigls2 <-function(formula, data = NULL, wj, wij){
   colnames(variances_residuals$u) <- colnames(dp_u) <-paste("u", 0:(q-1), sep="")
   rownames(variances_residuals$u) <- rownames(variances_residuals$var_u) <- as.vector(unique(clusters))
   names(variances_residuals$v) <- names(variances_residuals$yhat) <- rownames(fr)
-  names(teta) <- name3
+  names(theta) <- name3
 
   diag_matrix_invvech <- diag(matrix_invvech)
-  teta_var2 <- teta[diag_matrix_invvech]
-  se_teta_var2 <- dp_teta[diag_matrix_invvech]
+  theta_var2 <- theta[diag_matrix_invvech]
+  se_theta_var2 <- dp_theta[diag_matrix_invvech]
 
-  se_teta_var1 <- dp_teta[s]
+  se_theta_var1 <- dp_theta[s]
 
-  names(teta_var1) <- "Residual"
-  names(teta_var2) <- colnames(ie_teta) <- rownames(ie_teta) <- name2
+  names(theta_var1) <- "Residual"
+  names(theta_var2) <- colnames(ie_theta) <- rownames(ie_theta) <- name2
 
   if(s!=2){
     minus_dmi <- (one_to_sminus1)[-diag_matrix_invvech]
-    teta_cov <- teta[minus_dmi]
-    se_cov <- dp_teta[minus_dmi]
+    theta_cov <- theta[minus_dmi]
+    se_cov <- dp_theta[minus_dmi]
   } else {
-    teta_cov <- se_cov <- NULL
+    theta_cov <- se_cov <- NULL
   }
 
   names(beta) <- name1
   list_igls <-list(beta = list(coefficients = beta, standard_errors = dp_beta),
-                   theta = list(level2_variances = teta_var2, se_level2_variances = se_teta_var2, level2_covariances = teta_cov,
-                                se_level2_covariances = se_cov, var_cov = ie_teta, level1_variance = teta_var1,
-                                se_level1_variance = se_teta_var1),
+                   theta = list(level2_variances = theta_var2, se_level2_variances = se_theta_var2, level2_covariances = theta_cov,
+                                se_level2_covariances = se_cov, var_cov = ie_theta, level1_variance = theta_var1,
+                                se_level1_variance = se_theta_var1),
                    num_obs_1 = n, num_obs_2 = m, call = clprint, fitted_values = variances_residuals$yhat,
                    individual_residuals = variances_residuals$v,
                    group_residuals = list(coefficients = variances_residuals$u, standard_errors = dp_u),
@@ -358,16 +358,16 @@ fitted.multivariate <- function(object, ...){
 }
 
 #' @importFrom stats toeplitz
-teta_structure_toep <- function(teta, s){
-    return(toeplitz(as.numeric(teta[2:s])))
+theta_structure_toep <- function(theta, s){
+    return(toeplitz(as.numeric(theta[2:s])))
 }
-teta_structure_uns <- function(teta, s, tt, itera){
-  teta_uns <- matrix(0,tt,tt)
-  teta_uns[lower.tri(teta_uns, diag=TRUE)] <- as.numeric(teta[2:s])
-  teta_uns <- as.matrix(Matrix::forceSymmetric(teta_uns,uplo="L"))
+theta_structure_uns <- function(theta, s, tt, itera){
+  theta_uns <- matrix(0,tt,tt)
+  theta_uns[lower.tri(theta_uns, diag=TRUE)] <- as.numeric(theta[2:s])
+  theta_uns <- as.matrix(Matrix::forceSymmetric(theta_uns,uplo="L"))
   if (itera == 1)
-    diag(teta_uns) <- as.numeric(teta[2])
-  return(teta_uns)
+    diag(theta_uns) <- as.numeric(theta[2])
+  return(theta_uns)
 }
 
 delta_gen <- function(rot, s){
@@ -403,7 +403,7 @@ delta_gen <- function(rot, s){
   delta_matrix2 <- lapply(delta_matrix2,function(x) Matrix::forceSymmetric(x,uplo="U"))
   DELTA=c(list(matrix(0,tt,tt)),lapply(delta_matrix2, function(x) as.matrix(x)))
   return(list(delta = DELTA,
-              teta_loop_genlin = quote(Reduce('+', mapply("*",DELTA[-1], teta[-1], SIMPLIFY = F))),
+              theta_loop_genlin = quote(Reduce('+', mapply("*",DELTA[-1], theta[-1], SIMPLIFY = F))),
               name_type = matrix(paste("Genlin ", 1:(length(DELTA)-1), sep=""))))
 }
 
@@ -432,7 +432,7 @@ for(i in seq_along(lag_list)){
 
 delta_matrix2 <- lapply(delta_matrix2,function(x) Matrix::forceSymmetric(x,uplo="U"))
 DELTA=c(list(lag_m),lapply(delta_matrix2, function(x) as.matrix(x)))
-return(list(delta = DELTA, teta_loop_toep = quote(teta_structure_toep(teta, s)),
+return(list(delta = DELTA, theta_loop_toep = quote(theta_structure_toep(theta, s)),
             name_type = matrix(paste("TOEP ", 1:tt, sep=""))))
 }
 
@@ -447,6 +447,6 @@ delta_uns <- function(tt){
     }
   delta_matrix2 <- lapply(delta_matrix2,function(x) Matrix::forceSymmetric(x,uplo="L"))
   DELTA=c(list(matrix(0,tt,tt)),lapply(delta_matrix2, function(x) as.matrix(x)))
-  return(list(delta = DELTA, teta_loop_uns = quote(teta_structure_uns(teta, s, tt, itera)),
+  return(list(delta = DELTA, theta_loop_uns = quote(theta_structure_uns(theta, s, tt, itera)),
               name_type = matrix(paste("UNS ", 1:sum(1:tt), sep=""))))
 }

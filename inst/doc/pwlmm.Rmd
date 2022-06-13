@@ -26,28 +26,15 @@ library(pwlmm)
 
 ## 1. Introduction
 
-Hierarchical models, also known as multilevel models, have been widely applied in analyses where elementary units of a finite population are affected by the social groups or contexts to which they belong to. Examples are: students in schools, patients in hospitals, employees in companies and citizens in municipalities. Such hierarchies, however, need not to be restricted to two levels and can be expanded according to the nature of the population.
+Hierarchical models, also known as multilevel models, have been widely applied in analyses where elementary units of a finite population are affected by the social groups or contexts to which they belong to. Longitudinal data, or repeated measurements data, can be analysed under this approach, as measurements at different time points  (occasions)  occur within the same individual. Thus, considering the simplest case, a two-level model could be fitted with individuals at the highest level and the series of repeated  measurements at the lowest level (Hox et al., 2017).  In addition, it may also be of interest to investigate how correlated are the individual measurements at the different points in time. A tool used to deal with this particularity is the multivariate hierarchical model.
 
-Longitudinal data, or repeated measurements data, can be analysed under this approach, as measurements at different time points  (occasions)  occur within the same individual. Thus, considering the simplest case, a two-level model could be fitted with individuals at the highest level and the series of repeated  measurements at the lowest level (Hox et al., 2017).  In addition, it may also be of interest to investigate how correlated are the individual measurements at the different points in time. A tool used to deal with this particularity is the multivariate hierarchical model.
-
-Some researchers aim at analysing the results within the scope of those individuals selected for a specific study, while others focus on inferring for the finite population from which the sample was selected. While in the first case the point estimates are made directly from the results of models, for example, in the second case, sampling weights, calculated according to a sampling scheme, should be applied. Sampling schemes may include  stratification or clustering of elementary units, giving rise to a complex sample design.
-
-Although the sampling weights are essential for point estimation in survey data, this is often ignored under the hierarchical approach. One of the arguments is that the hierarchical models can incorporate certain characteristics of the sampling scheme as covariates, therefore assuming an ignorable sample design  (Rubin, 1976). On the other hand, when the units at any level of the hierarchy are selected with unequal probabilities, this argument may be inappropriate in the sense that the parameter estimates can be asymptotically biased  (Pfeffermann et al., 1998) .
-
-
- Pfeffermann et al. (1998) presented a method for incorporating the sampling weights when fitting two-level random coefficients models.  Veiga et al. (2014) presented an extension of these methods, for the multivariate multilevel model in a longitudinal data analysis that incorporates the sampling weights, adapting to the rotating panels of Brazilian labour force survey (BR-LFS). 
-
-
-Thus, the objective of this package is to adapt the methodology presented in Pfeffermann et al. (1998) and in Veiga et al. (2014) under the $R$ environment through  improved performance, given the high computational demand arising from the estimation process.
+Pfeffermann et al. (1998) presented a method for incorporating the sampling weights when fitting two-level random coefficients models.  Veiga et al. (2014) presented an extension of these methods, for the multivariate multilevel model in a longitudinal data analysis that incorporates the sampling weights, adapting to the rotating panels of Brazilian labour force survey (BR-LFS). The objective of this package is to adapt the methodology presented in Pfeffermann et al. (1998) and in Veiga et al. (2014) under the $R$ environment through  improved performance, given the high computational demand arising from the estimation process.
 
 
 ## 2. Estimation method for multilevel complex survey data
 
- Pfeffermann et al. (1998) presented the probability weighted iterative generalized least square (PWIGLS) estimation method base on the  already established iterative generalized least square (IGLS) algorithm Goldstein, 2011) for the two-level random coefficients model. In a nutshell, the proposed approach consists of replacing each of the sums of levels 1 and 2 of the original algorithm with weighted sums, where each level weight corresponds to the the inverse of the selection probability at that stage. 
+ Pfeffermann et al. (1998) presented the probability weighted iterative generalized least square (PWIGLS) estimation method base on the  already established iterative generalized least square (IGLS) algorithm Goldstein, 2011) for the two-level random coefficients model. In a nutshell, the proposed approach consists of replacing each of the sums of levels 1 and 2 of the original algorithm with weighted sums, where each level weight corresponds to the the inverse of the selection probability at that stage.  Veiga et al. (2014) extended this method incorporating not only  the extra level arising from the longitudinal structure, but also the complex covariance error structure, therefore accommodating the estimation of a multivariate multilevel model. Different error covariance linear structures were accommodated. 
 
-Using the framework developed by  Pfeffermann et al. (1998), Veiga et al. (2014) extended this method incorporating not only  the extra level arising from the longitudinal structure, but also the complex covariance error structure, therefore accommodating the estimation of a multivariate multilevel model. Different error covariance linear structures were accommodated. 
-
-The next subsections present some information on the estimation procedure implemented within the package.  Please, refer to  Pfeffermann et al. (1998), Veiga et al. (2014) for the full description of the theory.
 
 ### 2.1 PWIGLS estimation for two-level random coefficients models
 
